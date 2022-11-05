@@ -3,3 +3,6 @@
 *.gcno
 *.gcda
 *.gcov
+#Folders
+__pycache__/
+test/
