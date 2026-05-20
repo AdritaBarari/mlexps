@@ -3,6 +3,12 @@
 *.gcno
 *.gcda
 *.gcov
-#Folders
+
+# Folders
 __pycache__/
 test/
+
+# RAG evaluation framework — local runtime data
+.streamlit/secrets.toml
+rag-evaluation-framework/chroma_store/
+rag-evaluation-framework/eval_results.db
