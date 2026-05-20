@@ -1,7 +1,7 @@
 import os
 
-from datasets import Dataset
-from ragas import evaluate
+from ragas import EvaluationDataset, SingleTurnSample, evaluate
+from ragas.llms import LangchainLLMWrapper
 from ragas.metrics import (
     AnswerRelevancy,
     ContextPrecision,
@@ -33,14 +33,15 @@ def compute_mrr(chunks: list[dict], expected_answer: str, threshold: float = 0.1
     return 0.0
 
 
-def _get_ragas_llm(config: RAGConfig, api_key: str | None = None):
+def _get_ragas_llm(config: RAGConfig, api_key: str | None = None) -> LangchainLLMWrapper:
     if config.provider == "ollama":
-        from langchain_community.chat_models import ChatOllama
-        return ChatOllama(model=config.ollama_model, base_url=config.ollama_base_url)
+        from langchain_ollama import ChatOllama
+        lc_llm = ChatOllama(model=config.ollama_model, base_url=config.ollama_base_url)
     else:
         from langchain_anthropic import ChatAnthropic
         key = api_key or os.environ.get("ANTHROPIC_API_KEY", "")
-        return ChatAnthropic(model=config.haiku_model, api_key=key)
+        lc_llm = ChatAnthropic(model=config.haiku_model, api_key=key)
+    return LangchainLLMWrapper(lc_llm)
 
 
 def run_evaluation(
@@ -58,7 +59,7 @@ def run_evaluation(
     ]
 
     per_question_results = []
-    ragas_rows = []
+    samples = []
 
     for case in test_cases:
         question = case["question"]
@@ -68,12 +69,12 @@ def run_evaluation(
         mrr = compute_mrr(rag_resp.contexts, expected)
         context_texts = [c["text"] for c in rag_resp.contexts]
 
-        ragas_rows.append({
-            "question": question,
-            "answer": rag_resp.answer,
-            "contexts": context_texts,
-            "ground_truth": expected,
-        })
+        samples.append(SingleTurnSample(
+            user_input=question,
+            retrieved_contexts=context_texts,
+            response=rag_resp.answer,
+            reference=expected,
+        ))
 
         per_question_results.append({
             "question": question,
@@ -82,8 +83,8 @@ def run_evaluation(
             "mrr": mrr,
         })
 
-    ragas_dataset = Dataset.from_list(ragas_rows)
-    ragas_result = evaluate(ragas_dataset, metrics=metrics, llm=llm)
+    dataset = EvaluationDataset(samples=samples)
+    ragas_result = evaluate(dataset=dataset, metrics=metrics, llm=llm)
     ragas_df = ragas_result.to_pandas()
 
     for i, row in ragas_df.iterrows():

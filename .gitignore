@@ -12,3 +12,12 @@ test/
 .streamlit/secrets.toml
 rag-evaluation-framework/chroma_store/
 rag-evaluation-framework/eval_results.db
+rag-evaluation-framework/ground_truth.json
+rag-evaluation-framework/*.pdf
+rag-evaluation-framework/test-docs/
+
+# Python virtual environment
+rag-env/
+
+# Claude Code internal state
+.claude/
