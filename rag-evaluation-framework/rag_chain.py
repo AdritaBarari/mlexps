@@ -42,9 +42,12 @@ def parse_citations(answer: str, contexts: list[dict]) -> list[dict]:
 
 
 SYSTEM_PROMPT = (
-    "You are a research assistant. Answer the user's question using ONLY the provided contexts. "
-    "Cite every factual claim using the format [Filename, p.N] matching the context headers above. "
-    "If the contexts do not contain enough information to answer, say so — do not fabricate information."
+    "You are a research assistant. Answer the user's question using ONLY the provided contexts below.\n"
+    "IMPORTANT CITATION RULE: After every sentence that uses information from a context, you MUST add a citation "
+    "in this exact format: [FILENAME, p.PAGE] — where FILENAME and PAGE come from the context header, "
+    "for example: [attention_is_all_you_need.pdf, p.4]\n"
+    "Do NOT use numeric citations like [1] or [2]. Only use the filename+page format above.\n"
+    "If the contexts do not contain enough information, say so. Do not fabricate information."
 )
 
 

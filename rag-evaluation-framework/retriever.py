@@ -1,14 +1,21 @@
+from functools import lru_cache
+
 import chromadb
 from sentence_transformers import SentenceTransformer
 
 from config import RAGConfig
 
 
+@lru_cache(maxsize=4)
+def _get_embedder(model_name: str) -> SentenceTransformer:
+    return SentenceTransformer(model_name)
+
+
 def retrieve(query: str, config: RAGConfig) -> list[dict]:
     client = chromadb.PersistentClient(path=str(config.persist_dir))
     collection = client.get_or_create_collection(config.collection_name)
 
-    embedder = SentenceTransformer(config.embed_model)
+    embedder = _get_embedder(config.embed_model)
     query_embedding = embedder.encode(query).tolist()
 
     results = collection.query(
@@ -27,6 +34,6 @@ def retrieve(query: str, config: RAGConfig) -> list[dict]:
             "text": doc,
             "filename": meta["filename"],
             "page": meta["page"],
-            "score": 1 - dist,  # cosine similarity from distance
+            "score": 1 - dist,
         })
     return chunks
