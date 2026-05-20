@@ -22,9 +22,10 @@ def get_api_key() -> str:
     return st.secrets.get("ANTHROPIC_API_KEY", os.getenv("ANTHROPIC_API_KEY", ""))
 
 
-@st.cache_resource
 def get_config() -> RAGConfig:
-    return RAGConfig()
+    provider = st.session_state.get("provider", "ollama")
+    ollama_model = st.session_state.get("ollama_model", "llama3.2")
+    return RAGConfig(provider=provider, ollama_model=ollama_model)
 
 
 def bold_citations(text: str) -> str:
@@ -66,6 +67,23 @@ db_path = config.db_path
 init_db(db_path)
 
 st.title("📚 Research Paper RAG")
+
+# ── Sidebar: provider settings ────────────────────────────────────────────────
+with st.sidebar:
+    st.header("LLM Provider")
+    provider = st.radio("Provider", ["ollama", "anthropic"],
+                        index=0, key="provider")
+
+    if provider == "ollama":
+        st.text_input("Ollama model", value="llama3.2", key="ollama_model",
+                      help="Run `ollama pull <model>` first. E.g. llama3.2, mistral, qwen2.5")
+        st.caption("Make sure Ollama is running: `ollama serve`")
+    else:
+        api_key_input = st.text_input("Anthropic API key", type="password",
+                                      value=get_api_key(),
+                                      help="Or set ANTHROPIC_API_KEY in .streamlit/secrets.toml")
+        if api_key_input:
+            os.environ["ANTHROPIC_API_KEY"] = api_key_input
 
 tab_upload, tab_ask, tab_eval = st.tabs(["Upload Papers", "Ask Questions", "Evaluate"])
 

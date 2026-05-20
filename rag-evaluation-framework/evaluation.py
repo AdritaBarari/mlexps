@@ -1,7 +1,6 @@
 import os
 
 from datasets import Dataset
-from langchain_anthropic import ChatAnthropic
 from ragas import evaluate
 from ragas.metrics import (
     AnswerRelevancy,
@@ -11,7 +10,6 @@ from ragas.metrics import (
 )
 
 from config import RAGConfig
-from database import save_results
 from rag_chain import run_rag
 
 
@@ -35,14 +33,22 @@ def compute_mrr(chunks: list[dict], expected_answer: str, threshold: float = 0.1
     return 0.0
 
 
+def _get_ragas_llm(config: RAGConfig, api_key: str | None = None):
+    if config.provider == "ollama":
+        from langchain_community.chat_models import ChatOllama
+        return ChatOllama(model=config.ollama_model, base_url=config.ollama_base_url)
+    else:
+        from langchain_anthropic import ChatAnthropic
+        key = api_key or os.environ.get("ANTHROPIC_API_KEY", "")
+        return ChatAnthropic(model=config.haiku_model, api_key=key)
+
+
 def run_evaluation(
     test_cases: list[dict],
     config: RAGConfig,
     api_key: str | None = None,
 ) -> list[dict]:
-    key = api_key or os.environ.get("ANTHROPIC_API_KEY", "")
-
-    llm = ChatAnthropic(model=config.haiku_model, api_key=key)
+    llm = _get_ragas_llm(config, api_key)
 
     metrics = [
         Faithfulness(llm=llm),
@@ -57,7 +63,7 @@ def run_evaluation(
     for case in test_cases:
         question = case["question"]
         expected = case.get("expected_answer", "")
-        rag_resp = run_rag(question, config, api_key=key)
+        rag_resp = run_rag(question, config, api_key=api_key)
 
         mrr = compute_mrr(rag_resp.contexts, expected)
         context_texts = [c["text"] for c in rag_resp.contexts]

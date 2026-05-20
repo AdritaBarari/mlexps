@@ -2,8 +2,6 @@ import os
 import re
 from dataclasses import dataclass, field
 
-import anthropic
-
 from config import RAGConfig
 from retriever import retrieve
 from reranker import rerank
@@ -35,31 +33,56 @@ def parse_citations(answer: str, contexts: list[dict]) -> list[dict]:
         key = (filename.strip(), int(page_str))
         if key not in seen:
             seen.add(key)
-            citations.append({"ref": f"[{filename.strip()}, p.{page_str}]", "filename": filename.strip(), "page": int(page_str)})
+            citations.append({
+                "ref": f"[{filename.strip()}, p.{page_str}]",
+                "filename": filename.strip(),
+                "page": int(page_str),
+            })
     return citations
 
 
-def run_rag(query: str, config: RAGConfig, api_key: str | None = None) -> RAGResponse:
-    key = api_key or os.environ.get("ANTHROPIC_API_KEY", "")
-    client = anthropic.Anthropic(api_key=key)
+SYSTEM_PROMPT = (
+    "You are a research assistant. Answer the user's question using ONLY the provided contexts. "
+    "Cite every factual claim using the format [Filename, p.N] matching the context headers above. "
+    "If the contexts do not contain enough information to answer, say so — do not fabricate information."
+)
 
-    candidates = retrieve(query, config)
-    contexts = rerank(query, candidates, config)
 
-    system_prompt = (
-        "You are a research assistant. Answer the user's question using ONLY the provided contexts. "
-        "Cite every factual claim using the format [Filename, p.N] referencing the context number above. "
-        "If the contexts do not contain enough information to answer, say so — do not fabricate information."
-    )
-
-    user_message = build_prompt(query, contexts)
-
+def _call_anthropic(user_message: str, config: RAGConfig, api_key: str) -> str:
+    import anthropic
+    client = anthropic.Anthropic(api_key=api_key)
     response = client.messages.create(
         model=config.generation_model,
         max_tokens=1024,
-        system=system_prompt,
+        system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": user_message}],
     )
-    answer = response.content[0].text
+    return response.content[0].text
+
+
+def _call_ollama(user_message: str, config: RAGConfig) -> str:
+    import ollama
+    client = ollama.Client(host=config.ollama_base_url)
+    response = client.chat(
+        model=config.ollama_model,
+        messages=[
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": user_message},
+        ],
+    )
+    return response.message.content
+
+
+def run_rag(query: str, config: RAGConfig, api_key: str | None = None) -> RAGResponse:
+    candidates = retrieve(query, config)
+    contexts = rerank(query, candidates, config)
+    user_message = build_prompt(query, contexts)
+
+    if config.provider == "ollama":
+        answer = _call_ollama(user_message, config)
+    else:
+        key = api_key or os.environ.get("ANTHROPIC_API_KEY", "")
+        answer = _call_anthropic(user_message, config, key)
+
     citations = parse_citations(answer, contexts)
     return RAGResponse(answer=answer, citations=citations, contexts=contexts)
