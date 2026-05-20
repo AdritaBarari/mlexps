@@ -62,13 +62,14 @@ def _call_anthropic(user_message: str, config: RAGConfig, api_key: str) -> str:
 
 def _call_ollama(user_message: str, config: RAGConfig) -> str:
     import ollama
-    client = ollama.Client(host=config.ollama_base_url)
+    client = ollama.Client(host=config.ollama_base_url, timeout=config.ollama_timeout)
     response = client.chat(
         model=config.ollama_model,
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_message},
         ],
+        options={"num_ctx": config.ollama_num_ctx},
     )
     return response.message.content
 

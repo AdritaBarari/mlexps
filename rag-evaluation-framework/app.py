@@ -17,6 +17,168 @@ from rag_chain import run_rag
 
 st.set_page_config(page_title="Research RAG", page_icon="📚", layout="wide")
 
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ── Global fonts ── */
+html, body, [class*="css"], .stApp {
+    font-family: 'Inter', sans-serif !important;
+    letter-spacing: 0.01em;
+}
+
+/* ── Headings ── */
+h1, h2, h3, h4 {
+    font-family: 'Sora', sans-serif !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em !important;
+}
+
+/* ── App title ── */
+.stApp h1 {
+    font-size: 1.8rem !important;
+    background: linear-gradient(90deg, #4F8EF7, #A78BFA);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    padding-bottom: 0.2rem;
+}
+
+/* ── Sidebar ── */
+[data-testid="stSidebar"] {
+    background-color: #0D1117 !important;
+    border-right: 1px solid #21262D !important;
+}
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3 {
+    font-size: 0.85rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.1em !important;
+    color: #8B949E !important;
+}
+
+/* ── Tabs ── */
+[data-testid="stTabs"] button {
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 500 !important;
+    font-size: 0.85rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.08em !important;
+    color: #8B949E !important;
+}
+[data-testid="stTabs"] button[aria-selected="true"] {
+    color: #4F8EF7 !important;
+    border-bottom-color: #4F8EF7 !important;
+}
+
+/* ── Cards / containers ── */
+[data-testid="stExpander"] {
+    background-color: #161B22 !important;
+    border: 1px solid #21262D !important;
+    border-radius: 8px !important;
+}
+[data-testid="stExpander"] summary {
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 500 !important;
+    font-size: 0.85rem !important;
+    color: #8B949E !important;
+}
+
+/* ── Metric cards ── */
+[data-testid="stMetric"] {
+    background-color: #161B22;
+    border: 1px solid #21262D;
+    border-radius: 8px;
+    padding: 1rem 1.2rem !important;
+}
+[data-testid="stMetricLabel"] {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.72rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.08em !important;
+    color: #8B949E !important;
+}
+[data-testid="stMetricValue"] {
+    font-family: 'Sora', sans-serif !important;
+    font-size: 1.6rem !important;
+    font-weight: 700 !important;
+    color: #4F8EF7 !important;
+}
+
+/* ── Buttons ── */
+.stButton > button {
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 0.82rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.07em !important;
+    background-color: #4F8EF7 !important;
+    color: #0D1117 !important;
+    border: none !important;
+    border-radius: 6px !important;
+    padding: 0.45rem 1.2rem !important;
+    transition: opacity 0.15s ease !important;
+}
+.stButton > button:hover {
+    opacity: 0.85 !important;
+}
+
+/* ── Text input ── */
+.stTextInput > div > div > input {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.9rem !important;
+    background-color: #161B22 !important;
+    border: 1px solid #30363D !important;
+    border-radius: 6px !important;
+    color: #E6EDF3 !important;
+}
+.stTextInput > div > div > input:focus {
+    border-color: #4F8EF7 !important;
+    box-shadow: 0 0 0 3px rgba(79,142,247,0.15) !important;
+}
+
+/* ── Code / pre blocks (citations, context) ── */
+pre, code {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.8rem !important;
+    background-color: #161B22 !important;
+    border: 1px solid #21262D !important;
+    border-radius: 6px !important;
+}
+
+/* ── Captions ── */
+.stCaption, [data-testid="stCaptionContainer"] {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.72rem !important;
+    font-weight: 500 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.07em !important;
+    color: #8B949E !important;
+}
+
+/* ── Dataframe ── */
+[data-testid="stDataFrame"] {
+    border: 1px solid #21262D !important;
+    border-radius: 8px !important;
+    overflow: hidden;
+}
+
+/* ── Divider ── */
+hr {
+    border-color: #21262D !important;
+    margin: 1.2rem 0 !important;
+}
+
+/* ── Success / warning / error banners ── */
+[data-testid="stAlert"] {
+    border-radius: 6px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.85rem !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 
 def get_api_key() -> str:
     return st.secrets.get("ANTHROPIC_API_KEY", os.getenv("ANTHROPIC_API_KEY", ""))
@@ -75,7 +237,7 @@ with st.sidebar:
                         index=0, key="provider")
 
     if provider == "ollama":
-        st.text_input("Ollama model", value="llama3.2", key="ollama_model",
+        st.text_input("Ollama model", value="llama3.2:1b", key="ollama_model",
                       help="Run `ollama pull <model>` first. E.g. llama3.2, mistral, qwen2.5")
         st.caption("Make sure Ollama is running: `ollama serve`")
     else:
@@ -135,7 +297,8 @@ with tab_ask:
         if not api_key:
             st.error("ANTHROPIC_API_KEY not set. Add it to .streamlit/secrets.toml or the Streamlit Cloud dashboard.")
         else:
-            with st.spinner("Retrieving and generating answer…"):
+            spinner_msg = "Retrieving and generating answer… (Ollama on CPU: ~20–60s)" if config.provider == "ollama" else "Retrieving and generating answer…"
+            with st.spinner(spinner_msg):
                 response = run_rag(query, config, api_key=api_key)
             st.session_state.history.append({"query": query, "response": response})
 

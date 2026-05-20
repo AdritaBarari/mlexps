@@ -12,8 +12,10 @@ class RAGConfig:
     haiku_model: str = "claude-haiku-4-5-20251001"
 
     # Ollama models (used when provider="ollama")
-    ollama_model: str = "llama3.2"
+    ollama_model: str = "llama3.2:1b"
     ollama_base_url: str = "http://localhost:11434"
+    ollama_timeout: float = 120.0   # seconds before giving up on a generation
+    ollama_num_ctx: int = 2048      # context window — smaller = faster on CPU
 
     # Retrieval
     embed_model: str = "all-MiniLM-L6-v2"
