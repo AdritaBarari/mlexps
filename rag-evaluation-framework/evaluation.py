@@ -1,6 +1,7 @@
 import os
 
 from ragas import EvaluationDataset, SingleTurnSample, evaluate
+from ragas.embeddings import HuggingFaceEmbeddings
 from ragas.llms import LangchainLLMWrapper
 from ragas.metrics import (
     AnswerRelevancy,
@@ -8,6 +9,7 @@ from ragas.metrics import (
     ContextRecall,
     Faithfulness,
 )
+from ragas.run_config import RunConfig
 
 from config import RAGConfig
 from rag_chain import run_rag
@@ -36,7 +38,7 @@ def compute_mrr(chunks: list[dict], expected_answer: str, threshold: float = 0.1
 def _get_ragas_llm(config: RAGConfig, api_key: str | None = None) -> LangchainLLMWrapper:
     if config.provider == "ollama":
         from langchain_ollama import ChatOllama
-        lc_llm = ChatOllama(model=config.ollama_model, base_url=config.ollama_base_url)
+        lc_llm = ChatOllama(model=config.ollama_model, base_url=config.ollama_base_url, timeout=300)
     else:
         from langchain_anthropic import ChatAnthropic
         key = api_key or os.environ.get("ANTHROPIC_API_KEY", "")
@@ -50,10 +52,11 @@ def run_evaluation(
     api_key: str | None = None,
 ) -> list[dict]:
     llm = _get_ragas_llm(config, api_key)
+    embeddings = HuggingFaceEmbeddings(model=config.embed_model)
 
     metrics = [
         Faithfulness(llm=llm),
-        AnswerRelevancy(llm=llm),
+        AnswerRelevancy(llm=llm, embeddings=embeddings),
         ContextPrecision(llm=llm),
         ContextRecall(llm=llm),
     ]
@@ -83,8 +86,10 @@ def run_evaluation(
             "mrr": mrr,
         })
 
+    # max_workers=1 runs metrics serially — essential for Ollama on CPU
+    run_config = RunConfig(timeout=300, max_workers=1)
     dataset = EvaluationDataset(samples=samples)
-    ragas_result = evaluate(dataset=dataset, metrics=metrics, llm=llm)
+    ragas_result = evaluate(dataset=dataset, metrics=metrics, llm=llm, embeddings=embeddings, run_config=run_config)
     ragas_df = ragas_result.to_pandas()
 
     for i, row in ragas_df.iterrows():
