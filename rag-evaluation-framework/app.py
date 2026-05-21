@@ -294,7 +294,7 @@ with tab_ask:
 
     if st.button("Ask") and query.strip():
         api_key = get_api_key()
-        if not api_key:
+        if config.provider == "anthropic" and not api_key:
             st.error("ANTHROPIC_API_KEY not set. Add it to .streamlit/secrets.toml or the Streamlit Cloud dashboard.")
         else:
             spinner_msg = "Retrieving and generating answer… (Ollama on CPU: ~20–60s)" if config.provider == "ollama" else "Retrieving and generating answer…"
@@ -352,7 +352,7 @@ with tab_eval:
             st.warning("Add at least one question before running evaluation.")
         else:
             api_key = get_api_key()
-            if not api_key:
+            if config.provider == "anthropic" and not api_key:
                 st.error("ANTHROPIC_API_KEY not set.")
             else:
                 with st.spinner(f"Evaluating {len(test_cases)} question(s)…"):
