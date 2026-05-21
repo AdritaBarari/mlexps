@@ -77,6 +77,20 @@ def _call_ollama(user_message: str, config: RAGConfig) -> str:
     return response.message.content
 
 
+def _call_groq(user_message: str, config: RAGConfig, api_key: str) -> str:
+    from groq import Groq
+    client = Groq(api_key=api_key)
+    response = client.chat.completions.create(
+        model=config.groq_model,
+        messages=[
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": user_message},
+        ],
+        max_tokens=1024,
+    )
+    return response.choices[0].message.content
+
+
 def run_rag(query: str, config: RAGConfig, api_key: str | None = None) -> RAGResponse:
     candidates = retrieve(query, config)
     contexts = rerank(query, candidates, config)
@@ -84,6 +98,9 @@ def run_rag(query: str, config: RAGConfig, api_key: str | None = None) -> RAGRes
 
     if config.provider == "ollama":
         answer = _call_ollama(user_message, config)
+    elif config.provider == "groq":
+        key = api_key or os.environ.get("GROQ_API_KEY", "")
+        answer = _call_groq(user_message, config, key)
     else:
         key = api_key or os.environ.get("ANTHROPIC_API_KEY", "")
         answer = _call_anthropic(user_message, config, key)

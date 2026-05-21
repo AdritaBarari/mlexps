@@ -78,7 +78,7 @@ def _run_local_evaluation(test_cases: list[dict], config: RAGConfig) -> list[dic
     return results
 
 
-# ── Ragas evaluation (Anthropic provider only) ─────────────────────────────────
+# ── Ragas evaluation (Anthropic / Groq providers) ──────────────────────────────
 
 def _run_ragas_evaluation(
     test_cases: list[dict],
@@ -91,10 +91,16 @@ def _run_ragas_evaluation(
     from ragas.llms import LangchainLLMWrapper
     from ragas.metrics import AnswerRelevancy, ContextPrecision, ContextRecall, Faithfulness
     from ragas.run_config import RunConfig
-    from langchain_anthropic import ChatAnthropic
 
-    key = api_key or os.environ.get("ANTHROPIC_API_KEY", "")
-    lc_llm = ChatAnthropic(model=config.haiku_model, api_key=key)
+    if config.provider == "groq":
+        from langchain_groq import ChatGroq
+        key = api_key or os.environ.get("GROQ_API_KEY", "")
+        lc_llm = ChatGroq(model=config.groq_eval_model, api_key=key)
+    else:
+        from langchain_anthropic import ChatAnthropic
+        key = api_key or os.environ.get("ANTHROPIC_API_KEY", "")
+        lc_llm = ChatAnthropic(model=config.haiku_model, api_key=key)
+
     llm = LangchainLLMWrapper(lc_llm)
     embeddings = LangchainEmbeddingsWrapper(LCHuggingFaceEmbeddings(model_name=config.embed_model))
 
@@ -149,4 +155,4 @@ def run_evaluation(
 ) -> list[dict]:
     if config.provider == "ollama":
         return _run_local_evaluation(test_cases, config)
-    return _run_ragas_evaluation(test_cases, config, api_key)
+    return _run_ragas_evaluation(test_cases, config, api_key)  # anthropic or groq

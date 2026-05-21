@@ -194,11 +194,16 @@ def _ollama_available() -> bool:
         return False
 
 
+def get_groq_key() -> str:
+    return st.secrets.get("GROQ_API_KEY", os.getenv("GROQ_API_KEY", ""))
+
+
 def get_config() -> RAGConfig:
-    default_provider = "ollama" if _ollama_available() else "anthropic"
+    default_provider = "ollama" if _ollama_available() else "groq"
     provider = st.session_state.get("provider", default_provider)
     ollama_model = st.session_state.get("ollama_model", "llama3.2:1b")
-    return RAGConfig(provider=provider, ollama_model=ollama_model)
+    groq_model = st.session_state.get("groq_model", "llama-3.1-8b-instant")
+    return RAGConfig(provider=provider, ollama_model=ollama_model, groq_model=groq_model)
 
 
 def bold_citations(text: str) -> str:
@@ -244,13 +249,21 @@ st.title("📚 Research Paper RAG")
 # ── Sidebar: provider settings ────────────────────────────────────────────────
 with st.sidebar:
     st.header("LLM Provider")
-    provider = st.radio("Provider", ["ollama", "anthropic"],
+    provider = st.radio("Provider", ["ollama", "groq", "anthropic"],
                         index=0, key="provider")
 
     if provider == "ollama":
         st.text_input("Ollama model", value="llama3.2:1b", key="ollama_model",
                       help="Run `ollama pull <model>` first. E.g. llama3.2, mistral, qwen2.5")
         st.caption("Make sure Ollama is running: `ollama serve`")
+    elif provider == "groq":
+        st.text_input("Groq model", value="llama-3.1-8b-instant", key="groq_model",
+                      help="Free tier at console.groq.com. Other options: llama-3.3-70b-versatile, mixtral-8x7b-32768")
+        groq_key_input = st.text_input("Groq API key", type="password",
+                                       value=get_groq_key(),
+                                       help="Get a free key at console.groq.com — or set GROQ_API_KEY in secrets.toml")
+        if groq_key_input:
+            os.environ["GROQ_API_KEY"] = groq_key_input
     else:
         api_key_input = st.text_input("Anthropic API key", type="password",
                                       value=get_api_key(),
@@ -304,9 +317,11 @@ with tab_ask:
     query = st.text_input("Your question", placeholder="e.g. What is the attention mechanism?")
 
     if st.button("Ask") and query.strip():
-        api_key = get_api_key()
+        api_key = get_api_key() if config.provider == "anthropic" else get_groq_key()
         if config.provider == "anthropic" and not api_key:
             st.error("ANTHROPIC_API_KEY not set. Add it to .streamlit/secrets.toml or the Streamlit Cloud dashboard.")
+        elif config.provider == "groq" and not api_key:
+            st.error("GROQ_API_KEY not set. Get a free key at console.groq.com and enter it in the sidebar.")
         else:
             spinner_msg = "Retrieving and generating answer… (Ollama on CPU: ~20–60s)" if config.provider == "ollama" else "Retrieving and generating answer…"
             with st.spinner(spinner_msg):
@@ -362,9 +377,11 @@ with tab_eval:
         if not test_cases:
             st.warning("Add at least one question before running evaluation.")
         else:
-            api_key = get_api_key()
+            api_key = get_api_key() if config.provider == "anthropic" else get_groq_key()
             if config.provider == "anthropic" and not api_key:
                 st.error("ANTHROPIC_API_KEY not set.")
+            elif config.provider == "groq" and not api_key:
+                st.error("GROQ_API_KEY not set. Get a free key at console.groq.com.")
             else:
                 with st.spinner(f"Evaluating {len(test_cases)} question(s)…"):
                     results = run_evaluation(test_cases, config, api_key=api_key)

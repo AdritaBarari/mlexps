@@ -4,7 +4,7 @@ from pathlib import Path
 
 @dataclass
 class RAGConfig:
-    # Provider: "anthropic" or "ollama"
+    # Provider: "ollama" | "anthropic" | "groq"
     provider: str = "ollama"
 
     # Anthropic models (used when provider="anthropic")
@@ -16,6 +16,10 @@ class RAGConfig:
     ollama_base_url: str = "http://localhost:11434"
     ollama_timeout: float = 120.0   # seconds before giving up on a generation
     ollama_num_ctx: int = 2048      # context window — smaller = faster on CPU
+
+    # Groq models (used when provider="groq") — free tier available at console.groq.com
+    groq_model: str = "llama-3.1-8b-instant"
+    groq_eval_model: str = "llama-3.3-70b-versatile"  # larger model for Ragas evaluation
 
     # Retrieval
     embed_model: str = "all-MiniLM-L6-v2"
