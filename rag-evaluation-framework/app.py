@@ -184,9 +184,20 @@ def get_api_key() -> str:
     return st.secrets.get("ANTHROPIC_API_KEY", os.getenv("ANTHROPIC_API_KEY", ""))
 
 
+@st.cache_data(ttl=60)
+def _ollama_available() -> bool:
+    try:
+        import urllib.request
+        urllib.request.urlopen("http://localhost:11434/api/tags", timeout=2)
+        return True
+    except Exception:
+        return False
+
+
 def get_config() -> RAGConfig:
-    provider = st.session_state.get("provider", "ollama")
-    ollama_model = st.session_state.get("ollama_model", "llama3.2")
+    default_provider = "ollama" if _ollama_available() else "anthropic"
+    provider = st.session_state.get("provider", default_provider)
+    ollama_model = st.session_state.get("ollama_model", "llama3.2:1b")
     return RAGConfig(provider=provider, ollama_model=ollama_model)
 
 
