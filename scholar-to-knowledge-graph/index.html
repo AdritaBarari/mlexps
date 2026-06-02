@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Research Knowledge Graph — Adrita Barari</title>
+<script src="https://unpkg.com/vis-network@9.1.6/standalone/umd/vis-network.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#0d0d1a;color:#e0e0e0;display:flex;height:100vh;overflow:hidden}
+#sidebar{width:280px;min-width:280px;background:#12122a;border-right:1px solid #2a2a45;display:flex;flex-direction:column;padding:18px 16px;overflow-y:auto;z-index:10}
+h1{font-size:14px;color:#fff;margin-bottom:3px;line-height:1.3}
+.subtitle{font-size:11px;color:#666;margin-bottom:14px}
+.stats{display:flex;gap:8px;margin-bottom:16px}
+.stat{background:#1c1c38;border-radius:8px;padding:8px 0;flex:1;text-align:center}
+.stat .val{font-size:17px;font-weight:700;color:#5b8ee6}
+.stat .lbl{font-size:9px;color:#666;text-transform:uppercase;letter-spacing:.5px}
+.sec{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:1px;margin:14px 0 7px}
+.mode-btns{display:flex;flex-direction:column;gap:5px}
+.mbtn{padding:7px 10px;border:1px solid #2a2a45;background:#1c1c38;color:#999;border-radius:6px;cursor:pointer;font-size:11px;text-align:left;transition:all .15s}
+.mbtn:hover{border-color:#5b8ee6;color:#fff}
+.mbtn.active{background:#1e3a8a;border-color:#5b8ee6;color:#fff}
+.mbtn .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;vertical-align:middle}
+.filter-list{display:flex;flex-direction:column;gap:5px}
+.fi{display:flex;align-items:center;gap:7px;cursor:pointer;padding:3px 0}
+.fi input{cursor:pointer;accent-color:#5b8ee6}
+.fdot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.flbl{font-size:11px;color:#bbb}
+.fcnt{margin-left:auto;font-size:10px;color:#555}
+#legend{display:flex;flex-direction:column;gap:4px}
+.li{display:flex;align-items:center;gap:7px}
+.ldot{width:11px;height:11px;border-radius:2px;flex-shrink:0}
+.llbl{font-size:10px;color:#aaa}
+.ctrl-btn{width:100%;padding:7px;margin-bottom:5px;border:1px solid #2a2a45;background:#1c1c38;color:#999;border-radius:6px;cursor:pointer;font-size:11px;transition:all .15s;text-align:left}
+.ctrl-btn:hover{border-color:#5b8ee6;color:#fff}
+.ctrl-btn.on{border-color:#27ae60;color:#27ae60;background:#0d2a1a}
+#graph-wrap{flex:1;position:relative;background:#0d0d1a}
+#graph{width:100%;height:100%}
+#dp{position:absolute;bottom:20px;right:20px;width:310px;background:#12122a;border:1px solid #2a2a45;border-radius:10px;padding:15px;display:none;z-index:100;box-shadow:0 8px 30px rgba(0,0,0,.6)}
+#dp .dpt{font-size:9px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
+#dp .dptitle{font-size:13px;font-weight:600;color:#fff;margin-bottom:10px;line-height:1.4}
+#dp .dprow{display:flex;gap:8px;font-size:11px;margin-bottom:4px}
+#dp .dpk{color:#666;min-width:75px;flex-shrink:0}
+#dp .dpv{color:#ccc}
+#dpx{position:absolute;top:10px;right:12px;cursor:pointer;color:#555;font-size:15px}
+#dpx:hover{color:#fff}
+#loading{position:absolute;inset:0;background:#0d0d1a;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;z-index:999}
+.spin{width:36px;height:36px;border:3px solid #2a2a45;border-top-color:#5b8ee6;border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#loading p{color:#666;font-size:12px}
+.vis-tooltip{background:#12122a!important;border:1px solid #2a2a45!important;color:#ccc!important;border-radius:6px!important;font-size:11px!important;max-width:220px!important;padding:6px 9px!important}
+#search-wrap{position:relative;margin-bottom:4px}
+#search{width:100%;padding:7px 28px 7px 10px;background:#1c1c38;border:1px solid #2a2a45;border-radius:6px;color:#e0e0e0;font-size:12px;outline:none;transition:border-color .15s}
+#search::placeholder{color:#444}
+#search:focus{border-color:#5b8ee6}
+#search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);cursor:pointer;color:#444;font-size:14px;display:none;line-height:1;background:none;border:none}
+#search-clear:hover{color:#ccc}
+#search-count{font-size:10px;color:#555;margin-top:4px;min-height:14px}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <h1>Research Knowledge Graph</h1>
+  <p class="subtitle">Adrita Barari · Google Scholar</p>
+  <div class="stats">
+    <div class="stat"><div class="val">74</div><div class="lbl">Nodes</div></div>
+    <div class="stat"><div class="val">143</div><div class="lbl">Edges</div></div>
+    <div class="stat"><div class="val">88</div><div class="lbl">Cites</div></div>
+  </div>
+
+  <div class="sec">Search Nodes</div>
+  <div id="search-wrap">
+    <input id="search" type="text" placeholder="Search by name…" oninput="searchNodes(this.value)">
+    <button id="search-clear" onclick="clearSearch()">✕</button>
+  </div>
+  <div id="search-count"></div>
+
+  <div class="sec">Color Mode</div>
+  <div class="mode-btns">
+    <button class="mbtn active" id="btn-type"      onclick="setMode('type')">      <span class="dot" style="background:linear-gradient(135deg,#5b8ee6,#27ae60,#e67e22)"></span>By Node Type</button>
+    <button class="mbtn"        id="btn-cluster"   onclick="setMode('cluster')">   <span class="dot" style="background:linear-gradient(135deg,#e74c3c,#3498db,#2ecc71)"></span>By Research Cluster</button>
+    <button class="mbtn"        id="btn-citations" onclick="setMode('citations')"> <span class="dot" style="background:linear-gradient(135deg,#c0392b,#f39c12,#7f8c8d)"></span>By Citation Heat</button>
+  </div>
+
+  <div class="sec">Filter Node Types</div>
+  <div class="filter-list" id="flist"></div>
+
+  <div class="sec">Legend</div>
+  <div id="legend"></div>
+
+  <div class="sec">Controls</div>
+  <button class="ctrl-btn on" id="pbtn" onclick="togglePhysics()">⚡ Physics ON</button>
+  <button class="ctrl-btn"        onclick="network.fit({animation:{duration:600}})">⊙ Fit to Screen</button>
+</div>
+
+<div id="graph-wrap">
+  <div id="loading"><div class="spin"></div><p>Laying out graph…</p></div>
+  <div id="graph"></div>
+  <div id="dp">
+    <span id="dpx" onclick="document.getElementById('dp').style.display='none'">✕</span>
+    <div class="dpt" id="dpt"></div>
+    <div class="dptitle" id="dptitle"></div>
+    <div id="dpbody"></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+//  NODE METADATA
+// ══════════════════════════════════════════════════════════
+const NM = {
+  p1: {type:'Paper',label:'AI Damage\nDetection (Image)',year:2022,cites:16,title:'System and method for AI based determination of damage to physical structures',venue:'US Patent',cluster:'damage'},
+  p2: {type:'Paper',label:'AI Damage\nDetection (Video)',year:2024,cites:11,title:'AI based determination of damage to physical structures via video (2024)',venue:'US Patent',cluster:'damage'},
+  p3: {type:'Paper',label:'Natural Voice\nRendering',year:2019,cites:11,title:'System and method for rendering textual messages using customized natural voice',venue:'US Patent',cluster:'nlp'},
+  p4: {type:'Paper',label:'Contextual Audio\nfrom Image',year:2019,cites:11,title:'Method and system for generating a contextual audio related to an image',venue:'US Patent',cluster:'nlp'},
+  p5: {type:'Paper',label:'Vehicle Damage\nDimension Est.',year:2019,cites:7,title:'Accurate damage dimension estimation in AI driven vehicle inspection system',venue:'Springer NCVPRIPG',cluster:'damage'},
+  p6: {type:'Paper',label:'Attention Modeling\n& CV Applications',year:2015,cites:6,title:'Innovative research in attention modeling and computer vision applications',venue:'IGI Global',cluster:'security'},
+  p7: {type:'Paper',label:'Visual Crypto\nWatermarking Survey',year:2013,cites:5,title:'An Overview of Visual Cryptography based Video Watermarking Schemes',venue:'ACEE Conference',cluster:'security'},
+  p8: {type:'Paper',label:'ChatGPT: Uses\n& Limitations',year:2023,cites:4,title:'What is ChatGPT? Best uses and limitations of the brand-new tool',venue:'Emeritus Online',cluster:'genai'},
+  p9: {type:'Paper',label:'AlphaRA:\nMemory Redundancy',year:2021,cites:4,title:'AlphaRA: an AlphaZero based approach to redundancy analysis',venue:'IEEE ICMLA',cluster:'semi'},
+  p10:{type:'Paper',label:'Distortion-Free\nImage Generation',year:2020,cites:4,title:'System and method for generating distortion free images',venue:'US Patent',cluster:'damage'},
+  p11:{type:'Paper',label:'Duplicate Instance\nIdentification',year:2020,cites:3,title:'Duplicate Instance Identification In Multiview And Multiscale Systems',venue:'IEEE BigMM',cluster:'damage'},
+  p12:{type:'Paper',label:'Wafer Defect\nDetection (DL)',year:2022,cites:2,title:'Identifying defects on semiconductor wafers using deep learning and hierarchical reclustering',venue:'IEEE VLSID',cluster:'semi'},
+  p13:{type:'Paper',label:'AI Damage\nDetection (Video 2026)',year:2026,cites:1,title:'AI based determination of damage to physical structures via video (2026 continuation)',venue:'US Patent',cluster:'damage'},
+  p14:{type:'Paper',label:'Scalable AlphaZero\nRedundancy (GNN)',year:2022,cites:1,title:'A scalable solution to AlphaZero based Redundancy Analysis for semiconductor chips',venue:'IEEE ICMLA',cluster:'semi'},
+  p15:{type:'Paper',label:'Multimedia\nContextual Summary',year:2019,cites:1,title:'Method and a system for generating a contextual summary of multimedia content',venue:'US Patent',cluster:'nlp'},
+  p16:{type:'Paper',label:'Video Saliency\nfor VC Watermarking',year:2016,cites:1,title:'Video saliency detection for visual cryptography-based watermarking',venue:'IGI Global',cluster:'security'},
+  p17:{type:'Paper',label:'GNN Memory\nElement Repair',year:2025,cites:0,title:'Methods and electronic device for repairing memory element in memory device',venue:'US Patent',cluster:'semi'},
+  p18:{type:'Paper',label:'Camera Quality\nCalibration',year:2024,cites:0,title:'Automated Camera Quality Calibration & Matching',venue:'IEEE WINTECHCON',cluster:'semi'},
+  p19:{type:'Paper',label:'Data Drift\nQuantification',year:2024,cites:0,title:'Data Drift Quantification Metrics for Month-on-Month Semiconductor Data',venue:'IEEE WINTECHCON',cluster:'semi'},
+  p20:{type:'Paper',label:'Faulty Memory\nCell Repair',year:2024,cites:0,title:'Method and system for repairing faulty cells of memory device',venue:'US Patent',cluster:'semi'},
+  p21:{type:'Paper',label:'Suspect Recom.\nfor Memory Defects',year:2023,cites:0,title:'Suspect Recommendation For Memory Devices',venue:'IEEE WINTECHCON',cluster:'semi'},
+  p22:{type:'Paper',label:'Intent Detection\nfrom Behavior',year:2019,cites:0,title:'Method and system for determining an intent of a subject using behavioural pattern',venue:'US Patent',cluster:'nlp'},
+
+  t1: {type:'Topic',label:'Computer\nVision'},
+  t2: {type:'Topic',label:'AI & Machine\nLearning'},
+  t3: {type:'Topic',label:'Semiconductor\nManufacturing'},
+  t4: {type:'Topic',label:'Natural Language\nProcessing'},
+  t5: {type:'Topic',label:'Digital Security\n& Cryptography'},
+  t6: {type:'Topic',label:'Multimodal AI'},
+  t7: {type:'Topic',label:'Generative AI\n& LLMs'},
+
+  st1: {type:'Subtopic',label:'Damage Detection\n& Assessment'},
+  st2: {type:'Subtopic',label:'Image Processing'},
+  st3: {type:'Subtopic',label:'Video Analysis'},
+  st4: {type:'Subtopic',label:'Object Detection\n& Segmentation'},
+  st5: {type:'Subtopic',label:'Instance\nIdentification'},
+  st6: {type:'Subtopic',label:'Camera Calibration\n& Matching'},
+  st7: {type:'Subtopic',label:'Saliency Detection'},
+  st8: {type:'Subtopic',label:'Attention Modeling'},
+  st9: {type:'Subtopic',label:'Memory Repair\n& Redundancy'},
+  st10:{type:'Subtopic',label:'Defect Detection\n(Semiconductor)'},
+  st11:{type:'Subtopic',label:'Data Drift\nDetection'},
+  st12:{type:'Subtopic',label:'Speech Synthesis\n& Voice'},
+  st13:{type:'Subtopic',label:'Emotion Detection'},
+  st14:{type:'Subtopic',label:'Multimedia\nSummarization'},
+  st15:{type:'Subtopic',label:'Video\nWatermarking'},
+  st16:{type:'Subtopic',label:'Visual\nCryptography'},
+  st17:{type:'Subtopic',label:'Behavior Analysis\n& Intent'},
+  st18:{type:'Subtopic',label:'Reinforcement\nLearning'},
+  st19:{type:'Subtopic',label:'Graph Neural\nNetworks'},
+
+  m1: {type:'Method',label:'Deep Learning\n/ Neural Nets'},
+  m2: {type:'Method',label:'CNN'},
+  m3: {type:'Method',label:'Image\nSegmentation'},
+  m4: {type:'Method',label:'AlphaZero\n/ MCTS'},
+  m5: {type:'Method',label:'GNN'},
+  m6: {type:'Method',label:'Feature\nImportance'},
+  m7: {type:'Method',label:'Visual\nCryptography'},
+  m8: {type:'Method',label:'Motion Vector\nAnalysis'},
+  m9: {type:'Method',label:'Emotion\nAnalysis'},
+  m10:{type:'Method',label:'Scene\nUnderstanding'},
+  m11:{type:'Method',label:'One vs Rest\nClassification'},
+  m12:{type:'Method',label:'Hierarchical\nReclustering'},
+  m13:{type:'Method',label:'Optimization\nAlgorithms'},
+  m14:{type:'Method',label:'DARE-GRAM\nDrift Detection'},
+
+  d1: {type:'Dataset',label:'Vehicle\nInspection Data'},
+  d2: {type:'Dataset',label:'Semiconductor\nWafer Data'},
+  d3: {type:'Dataset',label:'Memory Device\nData'},
+  d4: {type:'Dataset',label:'Video &\nMultimedia Data'},
+  d5: {type:'Dataset',label:'Structural /\nBuilding Images'},
+
+
+  v1: {type:'Venue',label:'US Patent\nOffice'},
+  v2: {type:'Venue',label:'IEEE ICMLA'},
+  v3: {type:'Venue',label:'IEEE BigMM'},
+  v4: {type:'Venue',label:'IEEE\nWINTECHCON'},
+  v5: {type:'Venue',label:'IEEE VLSID'},
+  v6: {type:'Venue',label:'Springer\nNCVPRIPG'},
+  v7: {type:'Venue',label:'IGI Global'},
+  v8: {type:'Venue',label:'Emeritus\nOnline'},
+  v9: {type:'Venue',label:'ACEE\nConference'},
+};
+
+// ══════════════════════════════════════════════════════════
+//  EDGES
+// ══════════════════════════════════════════════════════════
+const ER = [
+  // p1
+  {f:'p1',t:'st1',r:'STUDIES'},{f:'p1',t:'st4',r:'STUDIES'},
+  {f:'p1',t:'m1',r:'USES_METHOD'},{f:'p1',t:'m3',r:'USES_METHOD'},{f:'p1',t:'m2',r:'USES_METHOD'},
+  {f:'p1',t:'d5',r:'USES_DATASET'},{f:'p1',t:'v1',r:'PUBLISHED_IN'},
+  // p2
+  {f:'p2',t:'st1',r:'STUDIES'},{f:'p2',t:'st3',r:'STUDIES'},
+  {f:'p2',t:'m1',r:'USES_METHOD'},{f:'p2',t:'m3',r:'USES_METHOD'},
+  {f:'p2',t:'d4',r:'USES_DATASET'},{f:'p2',t:'d5',r:'USES_DATASET'},{f:'p2',t:'v1',r:'PUBLISHED_IN'},
+  // p3
+  {f:'p3',t:'st12',r:'STUDIES'},{f:'p3',t:'st13',r:'STUDIES'},
+  {f:'p3',t:'m9',r:'USES_METHOD'},{f:'p3',t:'v1',r:'PUBLISHED_IN'},
+  // p4
+  {f:'p4',t:'st2',r:'STUDIES'},{f:'p4',t:'st14',r:'STUDIES'},
+  {f:'p4',t:'m10',r:'USES_METHOD'},{f:'p4',t:'v1',r:'PUBLISHED_IN'},
+  // p5
+  {f:'p5',t:'st1',r:'STUDIES'},{f:'p5',t:'st4',r:'STUDIES'},
+  {f:'p5',t:'m1',r:'USES_METHOD'},{f:'p5',t:'m2',r:'USES_METHOD'},
+  {f:'p5',t:'d1',r:'USES_DATASET'},{f:'p5',t:'v6',r:'PUBLISHED_IN'},
+  // p6
+  {f:'p6',t:'st8',r:'STUDIES'},{f:'p6',t:'st7',r:'STUDIES'},
+  {f:'p6',t:'m1',r:'USES_METHOD'},{f:'p6',t:'v7',r:'PUBLISHED_IN'},
+  // p7
+  {f:'p7',t:'st16',r:'STUDIES'},{f:'p7',t:'st15',r:'STUDIES'},
+  {f:'p7',t:'m7',r:'USES_METHOD'},{f:'p7',t:'v9',r:'PUBLISHED_IN'},
+  // p8
+  {f:'p8',t:'t7',r:'STUDIES'},{f:'p8',t:'v8',r:'PUBLISHED_IN'},
+  // p9
+  {f:'p9',t:'st18',r:'STUDIES'},{f:'p9',t:'st9',r:'STUDIES'},
+  {f:'p9',t:'m4',r:'USES_METHOD'},{f:'p9',t:'d3',r:'USES_DATASET'},{f:'p9',t:'v2',r:'PUBLISHED_IN'},
+  // p10
+  {f:'p10',t:'st2',r:'STUDIES'},
+  {f:'p10',t:'m1',r:'USES_METHOD'},{f:'p10',t:'m13',r:'USES_METHOD'},{f:'p10',t:'v1',r:'PUBLISHED_IN'},
+  // p11
+  {f:'p11',t:'st5',r:'STUDIES'},{f:'p11',t:'st2',r:'STUDIES'},
+  {f:'p11',t:'m1',r:'USES_METHOD'},{f:'p11',t:'v3',r:'PUBLISHED_IN'},
+  // p12
+  {f:'p12',t:'st10',r:'STUDIES'},
+  {f:'p12',t:'m2',r:'USES_METHOD'},{f:'p12',t:'m11',r:'USES_METHOD'},{f:'p12',t:'m12',r:'USES_METHOD'},
+  {f:'p12',t:'d2',r:'USES_DATASET'},{f:'p12',t:'v5',r:'PUBLISHED_IN'},
+  // p13
+  {f:'p13',t:'st1',r:'STUDIES'},{f:'p13',t:'st3',r:'STUDIES'},
+  {f:'p13',t:'m1',r:'USES_METHOD'},{f:'p13',t:'m3',r:'USES_METHOD'},{f:'p13',t:'v1',r:'PUBLISHED_IN'},
+  // p14
+  {f:'p14',t:'st18',r:'STUDIES'},{f:'p14',t:'st9',r:'STUDIES'},{f:'p14',t:'st19',r:'STUDIES'},
+  {f:'p14',t:'m4',r:'USES_METHOD'},{f:'p14',t:'m5',r:'USES_METHOD'},
+  {f:'p14',t:'d3',r:'USES_DATASET'},{f:'p14',t:'v2',r:'PUBLISHED_IN'},
+  // p15
+  {f:'p15',t:'st14',r:'STUDIES'},{f:'p15',t:'st13',r:'STUDIES'},
+  {f:'p15',t:'m10',r:'USES_METHOD'},{f:'p15',t:'m9',r:'USES_METHOD'},{f:'p15',t:'v1',r:'PUBLISHED_IN'},
+  // p16
+  {f:'p16',t:'st16',r:'STUDIES'},{f:'p16',t:'st15',r:'STUDIES'},{f:'p16',t:'st7',r:'STUDIES'},
+  {f:'p16',t:'m7',r:'USES_METHOD'},{f:'p16',t:'m8',r:'USES_METHOD'},{f:'p16',t:'v7',r:'PUBLISHED_IN'},
+  // p17
+  {f:'p17',t:'st9',r:'STUDIES'},{f:'p17',t:'st19',r:'STUDIES'},
+  {f:'p17',t:'m5',r:'USES_METHOD'},{f:'p17',t:'d3',r:'USES_DATASET'},{f:'p17',t:'v1',r:'PUBLISHED_IN'},
+  // p18
+  {f:'p18',t:'st6',r:'STUDIES'},{f:'p18',t:'st2',r:'STUDIES'},
+  {f:'p18',t:'m13',r:'USES_METHOD'},{f:'p18',t:'d2',r:'USES_DATASET'},{f:'p18',t:'v4',r:'PUBLISHED_IN'},
+  // p19
+  {f:'p19',t:'st11',r:'STUDIES'},{f:'p19',t:'m14',r:'USES_METHOD'},
+  {f:'p19',t:'d2',r:'USES_DATASET'},{f:'p19',t:'v4',r:'PUBLISHED_IN'},
+  // p20
+  {f:'p20',t:'st9',r:'STUDIES'},{f:'p20',t:'d3',r:'USES_DATASET'},{f:'p20',t:'v1',r:'PUBLISHED_IN'},
+  // p21
+  {f:'p21',t:'st10',r:'STUDIES'},{f:'p21',t:'st9',r:'STUDIES'},
+  {f:'p21',t:'m6',r:'USES_METHOD'},{f:'p21',t:'m1',r:'USES_METHOD'},
+  {f:'p21',t:'d3',r:'USES_DATASET'},{f:'p21',t:'v4',r:'PUBLISHED_IN'},
+  // p22
+  {f:'p22',t:'st17',r:'STUDIES'},{f:'p22',t:'st13',r:'STUDIES'},{f:'p22',t:'st3',r:'STUDIES'},
+  {f:'p22',t:'m9',r:'USES_METHOD'},{f:'p22',t:'v1',r:'PUBLISHED_IN'},
+  // INSTANCE_OF
+  {f:'st1',t:'t1',r:'INSTANCE_OF'},{f:'st1',t:'t2',r:'INSTANCE_OF'},
+  {f:'st2',t:'t1',r:'INSTANCE_OF'},{f:'st3',t:'t1',r:'INSTANCE_OF'},
+  {f:'st4',t:'t1',r:'INSTANCE_OF'},{f:'st5',t:'t1',r:'INSTANCE_OF'},
+  {f:'st6',t:'t1',r:'INSTANCE_OF'},{f:'st7',t:'t1',r:'INSTANCE_OF'},
+  {f:'st8',t:'t1',r:'INSTANCE_OF'},
+  {f:'st9',t:'t3',r:'INSTANCE_OF'},{f:'st10',t:'t3',r:'INSTANCE_OF'},
+  {f:'st11',t:'t3',r:'INSTANCE_OF'},{f:'st11',t:'t2',r:'INSTANCE_OF'},
+  {f:'st12',t:'t4',r:'INSTANCE_OF'},
+  {f:'st13',t:'t4',r:'INSTANCE_OF'},{f:'st13',t:'t6',r:'INSTANCE_OF'},
+  {f:'st14',t:'t6',r:'INSTANCE_OF'},{f:'st14',t:'t4',r:'INSTANCE_OF'},
+  {f:'st15',t:'t5',r:'INSTANCE_OF'},{f:'st16',t:'t5',r:'INSTANCE_OF'},
+  {f:'st17',t:'t2',r:'INSTANCE_OF'},{f:'st18',t:'t2',r:'INSTANCE_OF'},{f:'st19',t:'t2',r:'INSTANCE_OF'},
+  // RELATED_TO
+  {f:'t1',t:'t2',r:'RELATED_TO'},{f:'t1',t:'t6',r:'RELATED_TO'},{f:'t1',t:'t5',r:'RELATED_TO'},
+  {f:'t2',t:'t3',r:'RELATED_TO'},{f:'t2',t:'t4',r:'RELATED_TO'},
+  {f:'t2',t:'t6',r:'RELATED_TO'},{f:'t2',t:'t7',r:'RELATED_TO'},
+  {f:'t4',t:'t6',r:'RELATED_TO'},
+];
+
+// ══════════════════════════════════════════════════════════
+//  COLOR SCHEMES
+// ══════════════════════════════════════════════════════════
+const TC = {
+  Paper:    {bg:'#2563ae',bd:'#1d4f91'},
+  Topic:    {bg:'#c05e0a',bd:'#9a4a07'},
+  Subtopic: {bg:'#a16207',bd:'#854f05'},
+  Method:   {bg:'#166534',bd:'#0f4a25'},
+  Dataset:  {bg:'#0e7490',bd:'#0a5a70'},
+  Venue:    {bg:'#374151',bd:'#1f2937'},
+};
+
+const CC = {
+  damage:  '#e74c3c', semi:'#3498db', nlp:'#2ecc71',
+  security:'#f39c12', genai:'#9b59b6',
+};
+
+const CL = {
+  damage:'AI Damage Assessment & CV', semi:'Semiconductor & Memory',
+  nlp:'Multimodal AI & NLP', security:'Digital Security & Watermarking',
+  genai:'Generative AI & LLMs',
+};
+
+function citCol(c){
+  if(c>=12)return'#c0392b'; if(c>=7)return'#e74c3c';
+  if(c>=5) return'#e67e22'; if(c>=4)return'#f39c12';
+  if(c>=3) return'#f1c40f'; if(c>=2)return'#27ae60';
+  if(c>=1) return'#3498db'; return'#4b5563';
+}
+
+const RC = {
+  STUDIES:'#27ae60', USES_METHOD:'#3b82f6', USES_DATASET:'#0891b2',
+  PUBLISHED_IN:'#6b7280',
+  INSTANCE_OF:'#d97706', RELATED_TO:'#dc2626',
+};
+
+const SHAPES = {
+  Paper:'dot', Topic:'diamond', Subtopic:'ellipse',
+  Method:'hexagon', Dataset:'square', Venue:'triangle',
+};
+
+function nsize(id,m){
+  if(m.type==='Paper')   return Math.max(16,Math.min(52,16+((m.cites||0)*2.2)));
+  if(m.type==='Topic')   return 40;
+  if(m.type==='Subtopic')return 26;
+  if(m.type==='Method')  return 20;
+  if(m.type==='Author')  return Math.max(16,Math.min(32,12+((m.papers||1)*2)));
+  return 20;
+}
+
+function ncolor(id,m,mode){
+  if(mode==='type'){
+    const c=TC[m.type]||TC.Venue;
+    return{background:c.bg,border:c.bd,highlight:{background:c.bg,border:'#fff'}};
+  }
+  if(mode==='cluster'){
+    if(m.type==='Paper'){
+      const c=CC[m.cluster]||'#4b5563';
+      return{background:c,border:c,highlight:{background:c,border:'#fff'}};
+    }
+    return{background:'#1e293b',border:'#334155',highlight:{background:'#334155',border:'#fff'}};
+  }
+  // citations
+  if(m.type==='Paper'){
+    const c=citCol(m.cites||0);
+    return{background:c,border:c,highlight:{background:c,border:'#fff'}};
+  }
+  return{background:'#1e293b',border:'#334155',highlight:{background:'#334155',border:'#fff'}};
+}
+
+// ══════════════════════════════════════════════════════════
+//  BUILD VIS DATASETS
+// ══════════════════════════════════════════════════════════
+const hiddenTypes=new Set();
+let mode='type', network, visN, visE;
+
+function buildNodes(m){
+  return Object.entries(NM).filter(([,meta])=>meta.type!=='Author').map(([id,meta])=>{
+    let tip=`<b>${meta.label.replace(/\n/g,' ')}</b> <i>(${meta.type})</i>`;
+    if(meta.type==='Paper')  tip+=`<br>Year: ${meta.year} | Citations: ${meta.cites}<br><small>${meta.title}</small>`;
+    if(meta.type==='Author') tip+=`<br>Co-authored ${meta.papers} papers`;
+    if(meta.type==='Method') tip+=`<br>Used in ${ER.filter(e=>e.t===id&&e.r==='USES_METHOD').length} papers`;
+    return{
+      id, label:meta.label, title:tip,
+      shape:SHAPES[meta.type]||'dot',
+      size:nsize(id,meta),
+      color:ncolor(id,meta,m),
+      font:{color:'#f0f0f0',size:10,face:'Segoe UI',bold:{color:'#fff',size:11}},
+      hidden:hiddenTypes.has(meta.type),
+      borderWidth:2,
+    };
+  });
+}
+
+function buildEdges(){
+  return ER.filter(e=>e.r!=='COAUTHORED_BY'&&NM[e.f]&&NM[e.t]).map((e,i)=>{
+    const col=RC[e.r]||'#666';
+    const dashed=e.r==='COAUTHORED_BY'||e.r==='PUBLISHED_IN';
+    const thick=e.r==='RELATED_TO'||e.r==='INSTANCE_OF';
+    return{
+      id:i, from:e.f, to:e.t,
+      title:e.r.replace(/_/g,' '),
+      color:{color:col+'88',highlight:col,hover:col+'cc'},
+      width:thick?2.5:1,
+      dashes:dashed,
+      arrows:{to:{enabled:true,scaleFactor:0.45,type:'arrow'}},
+      smooth:{type:'continuous',roundness:0.25},
+    };
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════
+window.addEventListener('load',()=>{
+  visN=new vis.DataSet(buildNodes('type'));
+  visE=new vis.DataSet(buildEdges());
+  const container=document.getElementById('graph');
+  network=new vis.Network(container,{nodes:visN,edges:visE},{
+    physics:{
+      enabled:true,
+      barnesHut:{
+        gravitationalConstant:-5000,
+        centralGravity:0.15,
+        springLength:180,
+        springConstant:0.035,
+        damping:0.12,
+        avoidOverlap:0.4,
+      },
+      stabilization:{iterations:400,fit:true,updateInterval:30},
+    },
+    interaction:{
+      hover:true,tooltipDelay:200,
+      zoomView:true,dragView:true,
+      keyboard:{enabled:true},
+      navigationButtons:false,
+    },
+    layout:{improvedLayout:false},
+  });
+
+  network.on('stabilizationProgress',p=>{
+    const pct=Math.round((p.iterations/p.total)*100);
+    document.querySelector('#loading p').textContent=`Stabilizing… ${pct}%`;
+  });
+  network.on('stabilizationIterationsDone',()=>{
+    document.getElementById('loading').style.display='none';
+  });
+  network.on('click',p=>{
+    if(p.nodes.length>0) showDetail(p.nodes[0]);
+    else document.getElementById('dp').style.display='none';
+  });
+
+  buildFilterList();
+  updateLegend('type');
+});
+
+// ══════════════════════════════════════════════════════════
+//  MODE SWITCHING
+// ══════════════════════════════════════════════════════════
+function setMode(m){
+  mode=m;
+  ['type','cluster','citations'].forEach(k=>{
+    document.getElementById('btn-'+k).classList.toggle('active',k===m);
+  });
+  visN.update(Object.entries(NM).map(([id,meta])=>({id,color:ncolor(id,meta,m)})));
+  updateLegend(m);
+}
+
+// ══════════════════════════════════════════════════════════
+//  LEGEND
+// ══════════════════════════════════════════════════════════
+function li(col,label,round){
+  return`<div class="li"><div class="ldot" style="background:${col};border-radius:${round?'50%':'2px'}"></div><span class="llbl">${label}</span></div>`;
+}
+function updateLegend(m){
+  let h='';
+  if(m==='type'){
+    Object.entries(TC).forEach(([type,c])=>{ h+=li(c.bg,type); });
+  } else if(m==='cluster'){
+    Object.entries(CC).forEach(([k,c])=>{ h+=li(c,CL[k]); });
+    h+=li('#1e293b','Non-paper nodes');
+  } else {
+    [['#c0392b','16+ citations'],['#e74c3c','7–11 citations'],['#e67e22','5–6 citations'],
+     ['#f39c12','4 citations'],['#f1c40f','3 citations'],['#27ae60','2 citations'],
+     ['#3498db','1 citation'],['#4b5563','0 citations'],['#1e293b','Non-paper']
+    ].forEach(([c,l])=>{ h+=li(c,l); });
+  }
+  h+='<div class="sec" style="margin-top:10px">Edge Types</div>';
+  Object.entries(RC).forEach(([rel,col])=>{
+    h+=`<div class="li"><div style="width:18px;height:3px;background:${col};margin-right:5px;border-radius:1px"></div><span class="llbl" style="font-size:9px">${rel.replace(/_/g,' ')}</span></div>`;
+  });
+  document.getElementById('legend').innerHTML=h;
+}
+
+// ══════════════════════════════════════════════════════════
+//  FILTERS
+// ══════════════════════════════════════════════════════════
+const TCOUNTS={};
+Object.values(NM).forEach(m=>{ TCOUNTS[m.type]=(TCOUNTS[m.type]||0)+1; });
+
+function buildFilterList(){
+  const el=document.getElementById('flist');
+  Object.entries(TC).forEach(([type,c])=>{
+    el.innerHTML+=`<label class="fi">
+      <input type="checkbox" checked onchange="toggleType('${type}',this.checked)">
+      <div class="fdot" style="background:${c.bg}"></div>
+      <span class="flbl">${type}</span>
+      <span class="fcnt">${TCOUNTS[type]||0}</span>
+    </label>`;
+  });
+}
+
+function toggleType(type,show){
+  if(!show)hiddenTypes.add(type); else hiddenTypes.delete(type);
+  visN.update(Object.entries(NM).filter(([,m])=>m.type===type).map(([id])=>({id,hidden:!show})));
+}
+
+// ══════════════════════════════════════════════════════════
+//  PHYSICS TOGGLE
+// ══════════════════════════════════════════════════════════
+let physOn=true;
+function togglePhysics(){
+  physOn=!physOn;
+  network.setOptions({physics:{enabled:physOn}});
+  const b=document.getElementById('pbtn');
+  b.textContent=`⚡ Physics ${physOn?'ON':'OFF'}`;
+  b.classList.toggle('on',physOn);
+}
+
+// ══════════════════════════════════════════════════════════
+//  DETAIL PANEL
+// ══════════════════════════════════════════════════════════
+function row(k,v){ return`<div class="dprow"><span class="dpk">${k}</span><span class="dpv">${v}</span></div>`; }
+
+// ══════════════════════════════════════════════════════════
+//  SEARCH
+// ══════════════════════════════════════════════════════════
+const DIM_COLOR={background:'#1a1a2e',border:'#252545',highlight:{background:'#1a1a2e',border:'#252545'}};
+const DIM_FONT={color:'#2a2a4a'};
+
+function searchNodes(q){
+  const clearBtn=document.getElementById('search-clear');
+  const countEl=document.getElementById('search-count');
+  q=q.trim().toLowerCase();
+  clearBtn.style.display=q?'block':'none';
+
+  if(!q){
+    // restore all nodes to current mode colors
+    visN.update(Object.entries(NM).filter(([,m])=>m.type!=='Author').map(([id,meta])=>({
+      id,
+      color:ncolor(id,meta,mode),
+      font:{color:'#f0f0f0',size:10,face:'Segoe UI'},
+      borderWidth:2,
+    })));
+    visE.update(ER.filter(e=>e.r!=='COAUTHORED_BY'&&NM[e.f]&&NM[e.t]).map((_,i)=>({
+      id:i,color:{color:RC[ER.filter(e=>e.r!=='COAUTHORED_BY'&&NM[e.f]&&NM[e.t])[i]?.r]+'88'||'#66666688'}
+    })));
+    countEl.textContent='';
+    return;
+  }
+
+  // find matching node ids
+  const matchIds=new Set(
+    Object.entries(NM)
+      .filter(([,m])=>m.type!=='Author'&&(
+        m.label.toLowerCase().includes(q)||
+        (m.title&&m.title.toLowerCase().includes(q))||
+        (m.type&&m.type.toLowerCase().includes(q))
+      ))
+      .map(([id])=>id)
+  );
+
+  // also include nodes directly connected to matches (1-hop neighbours)
+  const neighbourIds=new Set(matchIds);
+  ER.filter(e=>e.r!=='COAUTHORED_BY'&&NM[e.f]&&NM[e.t]).forEach(e=>{
+    if(matchIds.has(e.f))neighbourIds.add(e.t);
+    if(matchIds.has(e.t))neighbourIds.add(e.f);
+  });
+
+  // update nodes
+  visN.update(Object.entries(NM).filter(([,m])=>m.type!=='Author').map(([id,meta])=>{
+    const isMatch=matchIds.has(id);
+    const isNeighbour=!isMatch&&neighbourIds.has(id);
+    if(isMatch) return{id,color:{...ncolor(id,meta,mode),border:'#fff'},borderWidth:3,font:{color:'#ffffff',size:12,face:'Segoe UI',bold:{color:'#fff',size:13}}};
+    if(isNeighbour) return{id,color:{background:'#2a2a45',border:'#3a3a60',highlight:{background:'#2a2a45',border:'#3a3a60'}},borderWidth:1,font:{color:'#555570',size:9,face:'Segoe UI'}};
+    return{id,color:DIM_COLOR,borderWidth:1,font:DIM_FONT};
+  }));
+
+  // dim all edges; brighten edges touching matches
+  const filteredEdges=ER.filter(e=>e.r!=='COAUTHORED_BY'&&NM[e.f]&&NM[e.t]);
+  visE.update(filteredEdges.map((e,i)=>{
+    const active=matchIds.has(e.f)||matchIds.has(e.t);
+    const col=RC[e.r]||'#666';
+    return{id:i,color:{color:active?col+'cc':'#1e1e35',highlight:col,hover:col}};
+  }));
+
+  countEl.textContent=matchIds.size?`${matchIds.size} match${matchIds.size>1?'es':''}`:q?'No matches':'';
+}
+
+function clearSearch(){
+  document.getElementById('search').value='';
+  searchNodes('');
+}
+
+function showDetail(id){
+  const m=NM[id]; if(!m)return;
+  document.getElementById('dpt').textContent=m.type;
+  document.getElementById('dptitle').textContent=m.label.replace(/\n/g,' ');
+  let body='';
+  if(m.type==='Paper'){
+    body+=row('Full title',`<span style="font-size:10px;color:#aaa">${m.title}</span>`);
+    body+=row('Year',m.year);
+    body+=row('Citations',m.cites);
+    body+=row('Venue',m.venue);
+    body+=row('Cluster',CL[m.cluster]||m.cluster);
+  } else if(m.type==='Author'){
+    body+=row('Papers co-authored',m.papers);
+    const myPapers=ER.filter(e=>e.t===id&&e.r==='COAUTHORED_BY').map(e=>NM[e.f]?.label.replace(/\n/g,' ')).filter(Boolean);
+    if(myPapers.length) body+=row('Works',`<span style="font-size:10px;color:#aaa">${myPapers.join(', ')}</span>`);
+  } else if(m.type==='Method'){
+    const cnt=ER.filter(e=>e.t===id&&e.r==='USES_METHOD').length;
+    body+=row('Used in',`${cnt} paper${cnt!==1?'s':''}`);
+  } else if(m.type==='Dataset'){
+    const cnt=ER.filter(e=>e.t===id&&e.r==='USES_DATASET').length;
+    body+=row('Used in',`${cnt} paper${cnt!==1?'s':''}`);
+  } else if(m.type==='Venue'){
+    const cnt=ER.filter(e=>e.t===id&&e.r==='PUBLISHED_IN').length;
+    body+=row('Publications',cnt);
+  } else if(m.type==='Topic'){
+    const subtopics=ER.filter(e=>e.t===id&&e.r==='INSTANCE_OF').map(e=>NM[e.f]?.label.replace(/\n/g,' ')).filter(Boolean);
+    if(subtopics.length) body+=row('Subtopics',`<span style="font-size:10px;color:#aaa">${subtopics.join(', ')}</span>`);
+  } else if(m.type==='Subtopic'){
+    const papers=ER.filter(e=>e.f===id).filter(e=>e.r==='STUDIES'||NM[e.t]?.type==='Paper');
+    const studiedBy=ER.filter(e=>e.t===id&&e.r==='STUDIES').map(e=>NM[e.f]?.label.replace(/\n/g,' ')).filter(Boolean);
+    if(studiedBy.length) body+=row('Studied in',`${studiedBy.length} paper${studiedBy.length!==1?'s':''}`);
+  }
+  document.getElementById('dpbody').innerHTML=body;
+  document.getElementById('dp').style.display='block';
+}
+</script>
+</body>
+</html>

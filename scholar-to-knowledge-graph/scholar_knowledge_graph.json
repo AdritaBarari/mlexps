@@ -1,0 +1,209 @@
+{
+  "metadata": {
+    "author": "Adrita Barari",
+    "scholar_profile": "https://scholar.google.com/citations?user=HWbN4UwAAAAJ&hl=en",
+    "generated": "2026-06-02",
+    "total_citations": 88,
+    "h_index": 6,
+    "i10_index": 4,
+    "note": "Author nodes removed for privacy",
+    "node_count": 74,
+    "edge_count": 143
+  },
+  "nodes": [
+    {"id": "p1",  "type": "Paper", "label": "AI-Based Damage Detection (Image)", "year": 2022, "citations": 16, "full_title": "System and method for artificial intelligence based determination of damage to physical structures", "venue_type": "Patent"},
+    {"id": "p2",  "type": "Paper", "label": "AI-Based Damage Detection (Video, 2024)", "year": 2024, "citations": 11, "full_title": "Artificial intelligence based determination of damage to physical structures via video", "venue_type": "Patent"},
+    {"id": "p3",  "type": "Paper", "label": "Rendering Text as Customized Natural Voice", "year": 2019, "citations": 11, "full_title": "System and method for rendering textual messages using customized natural voice", "venue_type": "Patent"},
+    {"id": "p4",  "type": "Paper", "label": "Contextual Audio Generation from Image", "year": 2019, "citations": 11, "full_title": "Method and system for generating a contextual audio related to an image", "venue_type": "Patent"},
+    {"id": "p5",  "type": "Paper", "label": "Vehicle Damage Dimension Estimation (AI Inspection)", "year": 2019, "citations": 7, "full_title": "Accurate damage dimension estimation in ai driven vehicle inspection system", "venue_type": "Conference"},
+    {"id": "p6",  "type": "Paper", "label": "Attention Modeling & Computer Vision Applications (Book)", "year": 2015, "citations": 6, "full_title": "Innovative research in attention modeling and computer vision applications", "venue_type": "Book"},
+    {"id": "p7",  "type": "Paper", "label": "Visual Cryptography Video Watermarking (Survey)", "year": 2013, "citations": 5, "full_title": "An Overview of Visual Cryptography based Video Watermarking Schemes: Techniques and Performance Comparison", "venue_type": "Conference"},
+    {"id": "p8",  "type": "Paper", "label": "ChatGPT: Uses and Limitations", "year": 2023, "citations": 4, "full_title": "What is ChatGPT? Best uses and limitations of the brand-new tool", "venue_type": "Article"},
+    {"id": "p9",  "type": "Paper", "label": "AlphaRA: AlphaZero for Memory Redundancy Analysis", "year": 2021, "citations": 4, "full_title": "AlphaRA: an alphazero based approach to redundancy analysis", "venue_type": "Conference"},
+    {"id": "p10", "type": "Paper", "label": "Distortion-Free Image Generation", "year": 2020, "citations": 4, "full_title": "System and method for generating distortion free images", "venue_type": "Patent"},
+    {"id": "p11", "type": "Paper", "label": "Duplicate Instance Identification in Multi-Camera Systems", "year": 2020, "citations": 3, "full_title": "Duplicate Instance Identification In Multiview And Multiscale Systems", "venue_type": "Conference"},
+    {"id": "p12", "type": "Paper", "label": "Semiconductor Wafer Defect Detection (Deep Learning)", "year": 2022, "citations": 2, "full_title": "Identifying combination of defects and unknown defects on semiconductor wafers using deep learning and hierarchical reclustering", "venue_type": "Conference"},
+    {"id": "p13", "type": "Paper", "label": "AI-Based Damage Detection (Video, 2026)", "year": 2026, "citations": 1, "full_title": "Artificial intelligence based determination of damage to physical structures via video (continuation)", "venue_type": "Patent"},
+    {"id": "p14", "type": "Paper", "label": "Scalable AlphaZero Redundancy Analysis (GNN)", "year": 2022, "citations": 1, "full_title": "A scalable solution to AlphaZero based Redundancy Analysis for semiconductor chips", "venue_type": "Conference"},
+    {"id": "p15", "type": "Paper", "label": "Contextual Summary of Multimedia Content", "year": 2019, "citations": 1, "full_title": "Method and a system for generating a contextual summary of multimedia content", "venue_type": "Patent"},
+    {"id": "p16", "type": "Paper", "label": "Video Saliency Detection for VC Watermarking", "year": 2016, "citations": 1, "full_title": "Video saliency detection for visual cryptography-based watermarking", "venue_type": "Book Chapter"},
+    {"id": "p17", "type": "Paper", "label": "GNN-Based Memory Element Repair", "year": 2025, "citations": 0, "full_title": "Methods and electronic device for repairing memory element in memory device", "venue_type": "Patent"},
+    {"id": "p18", "type": "Paper", "label": "Automated Camera Quality Calibration & Matching", "year": 2024, "citations": 0, "full_title": "Automated Camera Quality Calibration & Matching", "venue_type": "Conference"},
+    {"id": "p19", "type": "Paper", "label": "Data Drift Quantification for Semiconductor Data", "year": 2024, "citations": 0, "full_title": "Data Drift Quantification Metrics for Month-on-Month Semiconductor Data", "venue_type": "Conference"},
+    {"id": "p20", "type": "Paper", "label": "Faulty Memory Cell Repair System", "year": 2024, "citations": 0, "full_title": "Method and system for repairing faulty cells of memory device", "venue_type": "Patent"},
+    {"id": "p21", "type": "Paper", "label": "Suspect Recommendation for Memory Defects", "year": 2023, "citations": 0, "full_title": "Suspect Recommendation For Memory Devices", "venue_type": "Conference"},
+    {"id": "p22", "type": "Paper", "label": "Intent Detection via Behavioral Pattern Analysis", "year": 2019, "citations": 0, "full_title": "Method and system for determining an intent of a subject using behavioural pattern", "venue_type": "Patent"},
+
+    {"id": "t1", "type": "Topic", "label": "Computer Vision"},
+    {"id": "t2", "type": "Topic", "label": "Artificial Intelligence & Machine Learning"},
+    {"id": "t3", "type": "Topic", "label": "Semiconductor Manufacturing"},
+    {"id": "t4", "type": "Topic", "label": "Natural Language Processing"},
+    {"id": "t5", "type": "Topic", "label": "Digital Security & Cryptography"},
+    {"id": "t6", "type": "Topic", "label": "Multimodal AI"},
+    {"id": "t7", "type": "Topic", "label": "Generative AI & Large Language Models"},
+
+    {"id": "st1",  "type": "Subtopic", "label": "Damage Detection & Assessment"},
+    {"id": "st2",  "type": "Subtopic", "label": "Image Processing"},
+    {"id": "st3",  "type": "Subtopic", "label": "Video Analysis"},
+    {"id": "st4",  "type": "Subtopic", "label": "Object Detection & Segmentation"},
+    {"id": "st5",  "type": "Subtopic", "label": "Instance Identification (Multi-Camera)"},
+    {"id": "st6",  "type": "Subtopic", "label": "Camera Calibration & Quality Matching"},
+    {"id": "st7",  "type": "Subtopic", "label": "Saliency Detection"},
+    {"id": "st8",  "type": "Subtopic", "label": "Attention Modeling"},
+    {"id": "st9",  "type": "Subtopic", "label": "Memory Repair & Redundancy Analysis"},
+    {"id": "st10", "type": "Subtopic", "label": "Defect Detection (Semiconductor)"},
+    {"id": "st11", "type": "Subtopic", "label": "Data Drift Detection"},
+    {"id": "st12", "type": "Subtopic", "label": "Speech Synthesis & Voice Generation"},
+    {"id": "st13", "type": "Subtopic", "label": "Emotion Detection"},
+    {"id": "st14", "type": "Subtopic", "label": "Multimedia Summarization"},
+    {"id": "st15", "type": "Subtopic", "label": "Video Watermarking"},
+    {"id": "st16", "type": "Subtopic", "label": "Visual Cryptography"},
+    {"id": "st17", "type": "Subtopic", "label": "Behavior Analysis & Intent Recognition"},
+    {"id": "st18", "type": "Subtopic", "label": "Reinforcement Learning"},
+    {"id": "st19", "type": "Subtopic", "label": "Graph Neural Networks"},
+
+    {"id": "m1",  "type": "Method", "label": "Deep Learning / Neural Networks"},
+    {"id": "m2",  "type": "Method", "label": "Convolutional Neural Networks (CNN)"},
+    {"id": "m3",  "type": "Method", "label": "Image Segmentation"},
+    {"id": "m4",  "type": "Method", "label": "AlphaZero / Monte Carlo Tree Search (MCTS)"},
+    {"id": "m5",  "type": "Method", "label": "Graph Neural Networks (GNN)"},
+    {"id": "m6",  "type": "Method", "label": "Feature Importance Analysis"},
+    {"id": "m7",  "type": "Method", "label": "Visual Cryptography"},
+    {"id": "m8",  "type": "Method", "label": "Motion Vector Analysis"},
+    {"id": "m9",  "type": "Method", "label": "Emotion Analysis"},
+    {"id": "m10", "type": "Method", "label": "Scene Understanding"},
+    {"id": "m11", "type": "Method", "label": "One vs Rest Classification"},
+    {"id": "m12", "type": "Method", "label": "Hierarchical Reclustering"},
+    {"id": "m13", "type": "Method", "label": "Optimization Algorithms"},
+    {"id": "m14", "type": "Method", "label": "Data Drift Detection (DARE-GRAM)"},
+
+    {"id": "d1", "type": "Dataset", "label": "Vehicle Inspection Data"},
+    {"id": "d2", "type": "Dataset", "label": "Semiconductor Wafer Data"},
+    {"id": "d3", "type": "Dataset", "label": "Memory Device / Chip Data"},
+    {"id": "d4", "type": "Dataset", "label": "Video & Multimedia Data"},
+    {"id": "d5", "type": "Dataset", "label": "Structural / Building Images"},
+
+    {"id": "v1", "type": "Venue", "label": "US Patent Office"},
+    {"id": "v2", "type": "Venue", "label": "IEEE ICMLA"},
+    {"id": "v3", "type": "Venue", "label": "IEEE BigMM"},
+    {"id": "v4", "type": "Venue", "label": "IEEE WINTECHCON"},
+    {"id": "v5", "type": "Venue", "label": "IEEE VLSID"},
+    {"id": "v6", "type": "Venue", "label": "Springer NCVPRIPG"},
+    {"id": "v7", "type": "Venue", "label": "IGI Global"},
+    {"id": "v8", "type": "Venue", "label": "Emeritus Online Courses"},
+    {"id": "v9", "type": "Venue", "label": "International Conference on Advances in Computer Science (ACEE)"}
+  ],
+
+  "edges": [
+    {"source":"p1","target":"st1","relation":"STUDIES"},{"source":"p1","target":"st4","relation":"STUDIES"},
+    {"source":"p1","target":"m1","relation":"USES_METHOD"},{"source":"p1","target":"m3","relation":"USES_METHOD"},{"source":"p1","target":"m2","relation":"USES_METHOD"},
+    {"source":"p1","target":"d5","relation":"USES_DATASET"},{"source":"p1","target":"v1","relation":"PUBLISHED_IN"},
+
+    {"source":"p2","target":"st1","relation":"STUDIES"},{"source":"p2","target":"st3","relation":"STUDIES"},
+    {"source":"p2","target":"m1","relation":"USES_METHOD"},{"source":"p2","target":"m3","relation":"USES_METHOD"},
+    {"source":"p2","target":"d4","relation":"USES_DATASET"},{"source":"p2","target":"d5","relation":"USES_DATASET"},
+    {"source":"p2","target":"v1","relation":"PUBLISHED_IN"},
+
+    {"source":"p3","target":"st12","relation":"STUDIES"},{"source":"p3","target":"st13","relation":"STUDIES"},
+    {"source":"p3","target":"m9","relation":"USES_METHOD"},{"source":"p3","target":"v1","relation":"PUBLISHED_IN"},
+
+    {"source":"p4","target":"st2","relation":"STUDIES"},{"source":"p4","target":"st14","relation":"STUDIES"},
+    {"source":"p4","target":"m10","relation":"USES_METHOD"},{"source":"p4","target":"v1","relation":"PUBLISHED_IN"},
+
+    {"source":"p5","target":"st1","relation":"STUDIES"},{"source":"p5","target":"st4","relation":"STUDIES"},
+    {"source":"p5","target":"m1","relation":"USES_METHOD"},{"source":"p5","target":"m2","relation":"USES_METHOD"},
+    {"source":"p5","target":"d1","relation":"USES_DATASET"},{"source":"p5","target":"v6","relation":"PUBLISHED_IN"},
+
+    {"source":"p6","target":"st8","relation":"STUDIES"},{"source":"p6","target":"st7","relation":"STUDIES"},
+    {"source":"p6","target":"m1","relation":"USES_METHOD"},{"source":"p6","target":"v7","relation":"PUBLISHED_IN"},
+
+    {"source":"p7","target":"st16","relation":"STUDIES"},{"source":"p7","target":"st15","relation":"STUDIES"},
+    {"source":"p7","target":"m7","relation":"USES_METHOD"},{"source":"p7","target":"v9","relation":"PUBLISHED_IN"},
+
+    {"source":"p8","target":"t7","relation":"STUDIES"},{"source":"p8","target":"v8","relation":"PUBLISHED_IN"},
+
+    {"source":"p9","target":"st18","relation":"STUDIES"},{"source":"p9","target":"st9","relation":"STUDIES"},
+    {"source":"p9","target":"m4","relation":"USES_METHOD"},{"source":"p9","target":"d3","relation":"USES_DATASET"},
+    {"source":"p9","target":"v2","relation":"PUBLISHED_IN"},
+
+    {"source":"p10","target":"st2","relation":"STUDIES"},
+    {"source":"p10","target":"m1","relation":"USES_METHOD"},{"source":"p10","target":"m13","relation":"USES_METHOD"},
+    {"source":"p10","target":"v1","relation":"PUBLISHED_IN"},
+
+    {"source":"p11","target":"st5","relation":"STUDIES"},{"source":"p11","target":"st2","relation":"STUDIES"},
+    {"source":"p11","target":"m1","relation":"USES_METHOD"},{"source":"p11","target":"v3","relation":"PUBLISHED_IN"},
+
+    {"source":"p12","target":"st10","relation":"STUDIES"},
+    {"source":"p12","target":"m2","relation":"USES_METHOD"},{"source":"p12","target":"m11","relation":"USES_METHOD"},{"source":"p12","target":"m12","relation":"USES_METHOD"},
+    {"source":"p12","target":"d2","relation":"USES_DATASET"},{"source":"p12","target":"v5","relation":"PUBLISHED_IN"},
+
+    {"source":"p13","target":"st1","relation":"STUDIES"},{"source":"p13","target":"st3","relation":"STUDIES"},
+    {"source":"p13","target":"m1","relation":"USES_METHOD"},{"source":"p13","target":"m3","relation":"USES_METHOD"},
+    {"source":"p13","target":"v1","relation":"PUBLISHED_IN"},
+
+    {"source":"p14","target":"st18","relation":"STUDIES"},{"source":"p14","target":"st9","relation":"STUDIES"},{"source":"p14","target":"st19","relation":"STUDIES"},
+    {"source":"p14","target":"m4","relation":"USES_METHOD"},{"source":"p14","target":"m5","relation":"USES_METHOD"},
+    {"source":"p14","target":"d3","relation":"USES_DATASET"},{"source":"p14","target":"v2","relation":"PUBLISHED_IN"},
+
+    {"source":"p15","target":"st14","relation":"STUDIES"},{"source":"p15","target":"st13","relation":"STUDIES"},
+    {"source":"p15","target":"m10","relation":"USES_METHOD"},{"source":"p15","target":"m9","relation":"USES_METHOD"},
+    {"source":"p15","target":"v1","relation":"PUBLISHED_IN"},
+
+    {"source":"p16","target":"st16","relation":"STUDIES"},{"source":"p16","target":"st15","relation":"STUDIES"},{"source":"p16","target":"st7","relation":"STUDIES"},
+    {"source":"p16","target":"m7","relation":"USES_METHOD"},{"source":"p16","target":"m8","relation":"USES_METHOD"},
+    {"source":"p16","target":"v7","relation":"PUBLISHED_IN"},
+
+    {"source":"p17","target":"st9","relation":"STUDIES"},{"source":"p17","target":"st19","relation":"STUDIES"},
+    {"source":"p17","target":"m5","relation":"USES_METHOD"},{"source":"p17","target":"d3","relation":"USES_DATASET"},
+    {"source":"p17","target":"v1","relation":"PUBLISHED_IN"},
+
+    {"source":"p18","target":"st6","relation":"STUDIES"},{"source":"p18","target":"st2","relation":"STUDIES"},
+    {"source":"p18","target":"m13","relation":"USES_METHOD"},{"source":"p18","target":"d2","relation":"USES_DATASET"},
+    {"source":"p18","target":"v4","relation":"PUBLISHED_IN"},
+
+    {"source":"p19","target":"st11","relation":"STUDIES"},
+    {"source":"p19","target":"m14","relation":"USES_METHOD"},{"source":"p19","target":"d2","relation":"USES_DATASET"},
+    {"source":"p19","target":"v4","relation":"PUBLISHED_IN"},
+
+    {"source":"p20","target":"st9","relation":"STUDIES"},{"source":"p20","target":"d3","relation":"USES_DATASET"},
+    {"source":"p20","target":"v1","relation":"PUBLISHED_IN"},
+
+    {"source":"p21","target":"st10","relation":"STUDIES"},{"source":"p21","target":"st9","relation":"STUDIES"},
+    {"source":"p21","target":"m6","relation":"USES_METHOD"},{"source":"p21","target":"m1","relation":"USES_METHOD"},
+    {"source":"p21","target":"d3","relation":"USES_DATASET"},{"source":"p21","target":"v4","relation":"PUBLISHED_IN"},
+
+    {"source":"p22","target":"st17","relation":"STUDIES"},{"source":"p22","target":"st13","relation":"STUDIES"},{"source":"p22","target":"st3","relation":"STUDIES"},
+    {"source":"p22","target":"m9","relation":"USES_METHOD"},{"source":"p22","target":"v1","relation":"PUBLISHED_IN"},
+
+    {"source":"st1","target":"t1","relation":"INSTANCE_OF"},{"source":"st1","target":"t2","relation":"INSTANCE_OF"},
+    {"source":"st2","target":"t1","relation":"INSTANCE_OF"},{"source":"st3","target":"t1","relation":"INSTANCE_OF"},
+    {"source":"st4","target":"t1","relation":"INSTANCE_OF"},{"source":"st5","target":"t1","relation":"INSTANCE_OF"},
+    {"source":"st6","target":"t1","relation":"INSTANCE_OF"},{"source":"st7","target":"t1","relation":"INSTANCE_OF"},
+    {"source":"st8","target":"t1","relation":"INSTANCE_OF"},
+    {"source":"st9","target":"t3","relation":"INSTANCE_OF"},{"source":"st10","target":"t3","relation":"INSTANCE_OF"},
+    {"source":"st11","target":"t3","relation":"INSTANCE_OF"},{"source":"st11","target":"t2","relation":"INSTANCE_OF"},
+    {"source":"st12","target":"t4","relation":"INSTANCE_OF"},
+    {"source":"st13","target":"t4","relation":"INSTANCE_OF"},{"source":"st13","target":"t6","relation":"INSTANCE_OF"},
+    {"source":"st14","target":"t6","relation":"INSTANCE_OF"},{"source":"st14","target":"t4","relation":"INSTANCE_OF"},
+    {"source":"st15","target":"t5","relation":"INSTANCE_OF"},{"source":"st16","target":"t5","relation":"INSTANCE_OF"},
+    {"source":"st17","target":"t2","relation":"INSTANCE_OF"},{"source":"st18","target":"t2","relation":"INSTANCE_OF"},
+    {"source":"st19","target":"t2","relation":"INSTANCE_OF"},
+
+    {"source":"t1","target":"t2","relation":"RELATED_TO"},{"source":"t1","target":"t6","relation":"RELATED_TO"},
+    {"source":"t1","target":"t5","relation":"RELATED_TO"},{"source":"t2","target":"t3","relation":"RELATED_TO"},
+    {"source":"t2","target":"t4","relation":"RELATED_TO"},{"source":"t2","target":"t6","relation":"RELATED_TO"},
+    {"source":"t2","target":"t7","relation":"RELATED_TO"},{"source":"t4","target":"t6","relation":"RELATED_TO"}
+  ],
+
+  "summary": {
+    "node_types": {"Paper":22,"Topic":7,"Subtopic":19,"Method":14,"Dataset":5,"Venue":9},
+    "edge_types": {"STUDIES":44,"USES_METHOD":33,"USES_DATASET":13,"PUBLISHED_IN":22,"INSTANCE_OF":23,"RELATED_TO":8},
+    "research_clusters": [
+      {"name":"AI-Driven Damage Assessment & Computer Vision","papers":["p1","p2","p5","p10","p11","p13"]},
+      {"name":"Semiconductor Manufacturing & Memory Repair","papers":["p9","p12","p14","p17","p18","p19","p20","p21"]},
+      {"name":"Multimodal AI & NLP","papers":["p3","p4","p15","p22"]},
+      {"name":"Digital Security & Video Watermarking","papers":["p6","p7","p16"]},
+      {"name":"Generative AI & LLMs","papers":["p8"]}
+    ]
+  }
+}
